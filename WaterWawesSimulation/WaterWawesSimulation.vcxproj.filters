@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Исходные файлы">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Исходные файлы\Render">
+      <UniqueIdentifier>{c6ee7e9e-f888-47b4-ae5c-d930fd1ed871}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Render">
+      <UniqueIdentifier>{e6533ffa-848f-475b-ad33-2d0c199c530d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Render\Math">
+      <UniqueIdentifier>{8f741199-d25b-4e3b-8062-91266c1c0e06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Render\Math">
+      <UniqueIdentifier>{72ec63ce-2ca9-4135-a973-6c5b96d45a0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Render\Shaders">
+      <UniqueIdentifier>{5ef15b92-f037-476e-917a-d1504ede1786}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Render\Shaders\Private">
+      <UniqueIdentifier>{6e523915-56f8-45ae-b83a-b1b177bbf52b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="WaterWawesSimulation.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Application.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Render\Render.cpp">
+      <Filter>Исходные файлы\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Render\Math\Vector3D.cpp">
+      <Filter>Исходные файлы\Render\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Render\Math\Matrix.cpp">
+      <Filter>Исходные файлы\Render\Math</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Classes\Application.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Render\Render.h">
+      <Filter>Файлы заголовков\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Render\RenderHelper.h">
+      <Filter>Файлы заголовков\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Render\Math\Vector3D.h">
+      <Filter>Файлы заголовков\Render\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Render\Math\Matrix.h">
+      <Filter>Файлы заголовков\Render\Math</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Classes\Render\Shaders\Vertex.vert">
+      <Filter>Файлы заголовков\Render\Shaders\Private</Filter>
+    </None>
+    <None Include="Classes\Render\Shaders\Fragment.frag">
+      <Filter>Файлы заголовков\Render\Shaders\Private</Filter>
+    </None>
+  </ItemGroup>
+</Project>
