@@ -7,18 +7,17 @@
 class Application
 {
 public:
-	Application();
-	~Application() = default;
+    Application();
+    ~Application() = default;
 
-	Application(const Application&) = delete;
-	Application& operator=(const Application&) = delete;
+    Application(const Application&) = delete;
+    Application& operator=(const Application&) = delete;
 
-	[[nodiscard]] int Exec() const noexcept;
-
-private:
-	void Init();
+    [[nodiscard]] int Exec() const noexcept;
 
 private:
-	std::unique_ptr<Render::Render> render_;
+    void Init();
+
+private:
+    std::unique_ptr<Render::Render> render_;
 };
-

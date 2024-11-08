@@ -48,6 +48,15 @@
     <ClCompile Include="Classes\Render\Math\Matrix.cpp">
       <Filter>Исходные файлы\Render\Math</Filter>
     </ClCompile>
+    <ClCompile Include="Classes\Render\Buffer.cpp">
+      <Filter>Исходные файлы\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Render\Shader.cpp">
+      <Filter>Исходные файлы\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Classes\Render\glad.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Classes\Application.h">
@@ -63,6 +72,21 @@
       <Filter>Файлы заголовков\Render\Math</Filter>
     </ClInclude>
     <ClInclude Include="Classes\Render\Math\Matrix.h">
+      <Filter>Файлы заголовков\Render\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Render\Buffer.h">
+      <Filter>Файлы заголовков\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Render\Shader.h">
+      <Filter>Файлы заголовков\Render\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Render\glad.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Render\khrplatform.h">
+      <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="Classes\Render\Math\Math.h">
       <Filter>Файлы заголовков\Render\Math</Filter>
     </ClInclude>
   </ItemGroup>

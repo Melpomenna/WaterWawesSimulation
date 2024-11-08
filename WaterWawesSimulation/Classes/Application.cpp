@@ -2,22 +2,22 @@
 
 Application::Application()
 {
-	Init();
+    Init();
 }
 
 
 int Application::Exec() const noexcept
 {
-	while (render_->IsRunning())
-	{
-		render_->Update();
-	}
+    while (render_->IsRunning())
+    {
+        render_->Update();
+    }
 
-	return 0;
+    return 0;
 }
 
 
 void Application::Init()
 {
-	render_ = std::make_unique<Render::Render>();
+    render_ = std::make_unique<Render::Render>();
 }

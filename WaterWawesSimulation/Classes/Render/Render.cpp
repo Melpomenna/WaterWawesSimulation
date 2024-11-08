@@ -1,147 +1,240 @@
-#include <Classes/Render/RenderHelper.h>
-
+#include <Classes/Render/glad.h>
 #include "Render.h"
-
 #include <functional>
+#include <iostream>
+#include <map>
 #include <stdexcept>
+#include <sstream>
 
 namespace Render
 {
-	class Render::RenderSingletoneContext final
-	{
-	public:
-		explicit RenderSingletoneContext(const Render* render);
+    class Render::RenderSingletoneContext final
+    {
+    public:
+        explicit RenderSingletoneContext(Render* render);
 
 
-		[[maybe_unused]] [[nodiscard]] const Render* ResolveRender() const noexcept
-		{
-			return render_;
-		}
+        [[maybe_unused]] [[nodiscard]] const Render* ResolveRender() const noexcept
+        {
+            return render_;
+        }
 
-	private:
-		const Render* render_;
-	};
+        void Resize(const int width, const int height) const noexcept
+        {
+            render_->width_ = width;
+            render_->height_ = height;
+        }
 
-	Render::RenderSingletoneContext* CTX = nullptr;
+        [[nodiscard]] bool IsExtensionSupported(const GLuint extension) const noexcept
+        {
+            return render_->supportedExtensions_.size() > extension;
+        }
 
-	namespace
-	{
-		void OnClick(GLFWwindow*, int, int, int, int)
-		{
-		}
-	}
+    private:
+        Render* render_;
+    };
 
-	Render::Render() : window_(nullptr)
-	{
-		if (!CTX)
-		{
-			CTX = new RenderSingletoneContext(this);
-		}
-		Init();
-	}
+    Render::RenderSingletoneContext* CTX = nullptr;
 
-	Render::~Render()
-	{
-		if (!window_)
-		{
-			return;
-		}
-		delete CTX;
-		CTX = nullptr;
-		Destroy();
-		window_ = nullptr;
-	}
+    namespace
+    {
+        void OnClick(GLFWwindow*, int, int, int, int)
+        {
+        }
 
-	// ReSharper disable once CppMemberFunctionMayBeConst
-	void Render::Update()
-	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0, 0, 0, 1);
+        void OnClickPos(GLFWwindow*, double, double)
+        {
+        }
 
-		glfwSwapBuffers(window_);
-		glfwPollEvents();
-	}
+        void OnScroll(GLFWwindow*, double, double)
+        {
+        }
 
-	bool Render::IsRunning() const noexcept
-	{
-		return !glfwWindowShouldClose(window_);
-	}
+        void OnResize(GLFWwindow*, const int width, const int height)
+        {
+            CTX->Resize(width, height);
+        }
+
+        void DebugGLLogOn(const GLenum source, const GLenum type, const GLuint id, const GLenum severity,
+                          [[maybe_unused]] const GLsizei length, const GLchar* message,
+                          [[maybe_unused]] const void* param)
+        {
+            const std::map<GLenum, std::string> mSources{
+                {GL_DEBUG_SOURCE_API, "\033[32mGL_DEBUG_SOURCE_API: function from OpenGL API\033[0m"},
+                {
+                    GL_DEBUG_SOURCE_WINDOW_SYSTEM,
+                    "\033[32mGL_DEBUG_SOURCE_WINDOW_SYSTEM: function from Window system\033[0m"
+                },
+                {
+                    GL_DEBUG_SOURCE_THIRD_PARTY,
+                    "\033[32mGL_DEBUG_SOURCE_THIRD_PARTY: function from third party OpenGL\033[0m"
+                },
+                {GL_DEBUG_SOURCE_APPLICATION, "\033[32mGL_DEBUG_SOURCE_APPLICATION: function from application\033[0m"},
+                {GL_DEBUG_SOURCE_OTHER, "\033[32mGL_DEBUG_SOURCE_OTHER: function from other\033[0m"},
+                {
+                    GL_DEBUG_SOURCE_SHADER_COMPILER,
+                    "\033[32mGL_DEBUG_SOURCE_SHADER_COMPILER: shader compiler function\033[0m"
+                }
+            };
+
+            const std::map<GLenum, std::string> mTypes{
+                {GL_DEBUG_TYPE_ERROR, "GL_DEBUG_TYPE_ERROR: error in OpenGL",},
+                {
+                    GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR,
+                    "GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: use deprecated OpenGL function",
+                },
+                {GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR, "GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: undefined behavior",},
+                {GL_DEBUG_TYPE_PORTABILITY, "GL_DEBUG_TYPE_PORTABILITY: use unportable function",},
+                {GL_DEBUG_TYPE_PERFORMANCE, "GL_DEBUG_TYPE_PERFORMANCE: low performance",},
+                {GL_DEBUG_TYPE_MARKER, "GL_DEBUG_TYPE_MARKER: annotation",},
+                {GL_DEBUG_TYPE_PUSH_GROUP, "GL_DEBUG_TYPE_PUSH_GROUP: adding a debugging group to the stack",},
+                {GL_DEBUG_TYPE_POP_GROUP, "GL_DEBUG_TYPE_POP_GROUP: removing a debugging group from the stack",},
+                {GL_DEBUG_TYPE_OTHER, "GL_DEBUG_TYPE_OTHER: other"},
+            };
+
+            const std::map<GLenum, std::string> mSeverity{
+                {GL_DEBUG_SEVERITY_HIGH, "\033[31mGL_DEBUG_SEVERITY_HIGH: critical error\033[0m"},
+                {GL_DEBUG_SEVERITY_MEDIUM, "\033[35mGL_DEBUG_SEVERITY_MEDIUM: important notification\033[0m"},
+                {GL_DEBUG_SEVERITY_LOW, "\033[32mGL_DEBUG_SEVERITY_LOW: maybe unused notification\033[0m"},
+                {GL_DEBUG_SEVERITY_NOTIFICATION, "\033[34mGL_DEBUG_SEVERITY_NOTIFICATION: notification\033[0m"}
+            };
+
+            static std::stringstream oss;
+
+            std::stringstream toss;
+            toss  << '[' << mSeverity.at(severity) << "]:" << mSources.at(source) << ",[" << mTypes.at(type) <<
+                "] Id:" << id
+                << ", Message:" << message << '\n';
+            bool isSame = false;
+            if (oss.str() != toss.str())
+            {
+                oss << toss.str();
+            }
+            else {
+                isSame = true;
+            }
+
+            if (!isSame)
+            {
+                std::cerr << oss.str();
+            }
+        }
+    }
+
+    Render::Render() : window_(nullptr)
+    {
+        if (!CTX)
+        {
+            CTX = new RenderSingletoneContext(this);
+        }
+        Init();
+    }
+
+    Render::~Render()
+    {
+        if (!window_)
+        {
+            return;
+        }
+        delete CTX;
+        CTX = nullptr;
+        Destroy();
+        window_ = nullptr;
+    }
+
+    // ReSharper disable once CppMemberFunctionMayBeConst
+    void Render::Update()
+    {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(0, 0, 0, 1);
+
+        glEnable(GL_COLOR_BUFFER_BIT);
+
+        glfwSwapBuffers(window_);
+        glfwPollEvents();
+    }
+
+    bool Render::IsRunning() const noexcept
+    {
+        return !glfwWindowShouldClose(window_);
+    }
 
 
-	void Render::Destroy() const noexcept
-	{
-		glfwDestroyWindow(window_);
-		glfwTerminate();
-	}
+    void Render::Destroy() const noexcept
+    {
+        glfwDestroyWindow(window_);
+        glfwTerminate();
+    }
 
 
-	void Render::Init()
-	{
-		if (glfwInit() == GLFW_FALSE)
-		{
-			throw std::runtime_error("Cannot Init GLFW");
-		}
+    void Render::Init()
+    {
+        if (glfwInit() == GLFW_FALSE)
+        {
+            throw std::runtime_error("Cannot Init GLFW");
+        }
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 
 
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
 
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-		window_ = glfwCreateWindow(static_cast<int_fast64_t>(RenderView::Width),
-		                           static_cast<int_fast64_t>(RenderView::Height), TITLE, nullptr, nullptr);
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 
-		if (!GL_CALL(glfwMakeContextCurrent, window_))
-		{
-			throw std::runtime_error("Something went wrong!");
-		}
+        window_ = glfwCreateWindow(static_cast<int_fast64_t>(RenderView::Width),
+                                   static_cast<int_fast64_t>(RenderView::Height), TITLE, nullptr, nullptr);
 
-		if (!GL_CALL(glEnable, GL_BLEND))
-		{
-			throw std::runtime_error("Cannot enable GL_BLEND");
-		}
+        glfwMakeContextCurrent(window_);
 
-		if (!GL_CALL(glBlendFunc, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
-		{
-			throw std::runtime_error("Cannot set blend func");
-		}
+        if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+        {
+            throw std::runtime_error("Failed to initialize GLAD\n");
+        }
 
-		if (!GL_CALL(glEnable, GL_DEPTH_TEST))
-		{
-			throw std::runtime_error("Cannot enable GL_DEPTH_TEST");
-		}
+        GLint supportedExtensionsCount;
+        glGetIntegerv(GL_NUM_EXTENSIONS, &supportedExtensionsCount);
 
-		if (glewInit() != GLEW_OK)
-		{
-			throw std::runtime_error("Cannot init GLEW");
-		}
+        supportedExtensions_ = std::pmr::vector<GLint>(supportedExtensionsCount);
 
-		SetUpViewPort();
+        for (GLint i = 0; i < supportedExtensionsCount; ++i)
+        {
+            supportedExtensions_[i] = i;
+        }
 
-		glfwSetKeyCallback(window_, OnClick);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_DEPTH);
 
-		glfwShowWindow(window_);
-	}
+        width_ = static_cast<int>(RenderView::Width);
+        height_ = static_cast<int>(RenderView::Height);
+        depth_ = static_cast<int>(RenderView::Depth);
 
-	// ReSharper disable once CppMemberFunctionMayBeStatic
-	void Render::SetUpViewPort() const noexcept
-	{
-		constexpr double w = static_cast<double>(RenderView::Width);
-		constexpr double h = static_cast<double>(RenderView::Height);
-		constexpr double d = static_cast<double>(RenderView::Depth);
+        SetUpViewPort();
 
-		glViewport(0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
+        glfwSetKeyCallback(window_, OnClick);
+        glfwSetCursorPosCallback(window_, OnClickPos);
+        glfwSetScrollCallback(window_, OnScroll);
+        glfwSetWindowSizeCallback(window_, OnResize);
+        glDebugMessageCallback(DebugGLLogOn, nullptr);
+        glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE,GL_DONT_CARE, 0, nullptr, GL_TRUE);
 
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
+        glfwShowWindow(window_);
+    }
 
-		glOrtho(-w, w, -h, h, -d, d);
-	}
+    // ReSharper disable once CppMemberFunctionMayBeStatic
+    void Render::SetUpViewPort() const noexcept
+    {
+        const double w = width_;
+        const double h = height_;
 
-	Render::RenderSingletoneContext::RenderSingletoneContext(const Render* render) : render_(render)
-	{
-	}
+        glViewport(0, 0, static_cast<GLsizei>(w), static_cast<GLsizei>(h));
+    }
+
+    Render::RenderSingletoneContext::RenderSingletoneContext(Render* const render) : render_(render)
+    {
+    }
 }
